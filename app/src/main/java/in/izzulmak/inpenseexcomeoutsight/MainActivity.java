@@ -41,7 +41,7 @@ public class MainActivity extends ActionBarActivity {
             //-- no table yet, let's create all of them
             db.execSQL("CREATE TABLE IF NOT EXISTS accounts(id INT, name VARCHAR, type VARCHAR, balance INT, enabled BOOLEAN)"); //-- Main accounts
             db.execSQL("CREATE TABLE IF NOT EXISTS account_balances(id INT, account_id INT, balance_before INT, balance INT, date DATE)");
-            db.execSQL("CREATE TABLE IF NOT EXISTS incomesexpenses(id INT, account_id INT, description VARCHAR, type INT, amount INT, date DATE)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS incomesexpenses(id INT, account_id INT, description VARCHAR, type VARCHAR, amount INT, date DATE)");
             db.execSQL("CREATE TABLE IF NOT EXISTS settings(name VARCHAR, value VARCHAR)");
 
             db.execSQL("INSERT INTO accounts VALUES(1, 'Cash in Hand', 'BASE', 0, 1)");
@@ -60,8 +60,8 @@ public class MainActivity extends ActionBarActivity {
 
         Cursor dbv_baseAccount = db.rawQuery("SELECT settings.value,settings.name,accounts.name FROM settings,accounts WHERE settings.name='base_account' AND accounts.id=settings.value",null);
         dbv_baseAccount.moveToNext();
-        dbv_baseAccount_id = dbv_baseAccount.getInt(dbv_baseAccount.getColumnIndex("settings.value"));
-        dbv_baseAccount_name = dbv_baseAccount.getString(dbv_baseAccount.getColumnIndex("accounts.name"));
+        dbv_baseAccount_id = dbv_baseAccount.getInt(0);
+        dbv_baseAccount_name = dbv_baseAccount.getString(2);
         tv_Accountname.setText("Base account: "+dbv_baseAccount_name);
         db.close();
     }
@@ -105,8 +105,8 @@ public class MainActivity extends ActionBarActivity {
 
                     Cursor dbv_baseAccount = db.rawQuery("SELECT settings.value,settings.name,accounts.name FROM settings,accounts WHERE settings.name='base_account' AND accounts.id=settings.value", null);
                     dbv_baseAccount.moveToNext();
-                    dbv_baseAccount_id = dbv_baseAccount.getInt(dbv_baseAccount.getColumnIndex("settings.value"));
-                    dbv_baseAccount_name = dbv_baseAccount.getString(dbv_baseAccount.getColumnIndex("accounts.name"));
+                    dbv_baseAccount_id = dbv_baseAccount.getInt(0);
+                    dbv_baseAccount_name = dbv_baseAccount.getString(2);
                     tv_Accountname.setText("Base account: " + dbv_baseAccount_name);
 
                     db.close();
@@ -122,7 +122,8 @@ public class MainActivity extends ActionBarActivity {
     public void gotoAddincome(View view)
     {
         Intent mi = new Intent(MainActivity.this, AddincomeActivity.class);
-        mi.putExtra("v_account","cashinhand");
+        mi.putExtra("v_account",dbv_baseAccount_name);
+        mi.putExtra("v_account_id", dbv_baseAccount_id);
         MainActivity.this.startActivityForResult(mi, ROOM_ADDINCOME_ID);
     }
 

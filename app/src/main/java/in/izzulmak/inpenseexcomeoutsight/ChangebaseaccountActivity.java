@@ -57,16 +57,20 @@ public class ChangebaseaccountActivity extends ActionBarActivity {
         Cursor dbv_accounts = db.rawQuery("SELECT * FROM accounts WHERE type='BASE'",null);
         //-- Make ArrayList and push every needed row value
         ArrayList<CharSequence> ALaccounts_list = new ArrayList<CharSequence>();
+        ArrayList<Integer> accounts_listID = new ArrayList<Integer>();
         while (dbv_accounts.moveToNext())
         {
             String row = dbv_accounts.getString(dbv_accounts.getColumnIndex("name"));
-            ALaccounts_list.add(row);
+            String balance = dbv_accounts.getString(dbv_accounts.getColumnIndex("balance"));
+            ALaccounts_list.add(row+" ["+balance+"]");
+            accounts_listID.add(dbv_accounts.getInt(dbv_accounts.getColumnIndex("id")));
         }
         db.close();
         //-- covert the ArrayList to an Array
         CharSequence[] accounts_list = new CharSequence[ALaccounts_list.size()];
         accounts_list = ALaccounts_list.toArray(accounts_list);
         final CharSequence[] finalAccounts_list = accounts_list; //-- The array is ready to use in AlertDialog.Builder.setItems
+        final ArrayList<Integer> finalAccounts_listID = accounts_listID;
         bt_Cba_Baseaccount.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -79,7 +83,7 @@ public class ChangebaseaccountActivity extends ActionBarActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int item){
                                         bt_Cba_Baseaccount.setText(finalAccounts_list[item]);
-                                        ChangebaseaccountActivity.baseAccount = item+1;
+                                        ChangebaseaccountActivity.baseAccount = finalAccounts_listID.get(item);
                                     }
                                 }
                         );
