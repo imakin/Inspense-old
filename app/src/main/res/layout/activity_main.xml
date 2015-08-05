@@ -49,6 +49,7 @@
                     android:layout_weight="1"
                     android:gravity="end">
                     <TextView
+                        android:id="@+id/tv_SumIncome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="400,000"
@@ -80,6 +81,7 @@
                     android:layout_weight="1"
                     android:gravity="end">
                     <TextView
+                        android:id="@+id/tv_SumExpense"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="400,000"

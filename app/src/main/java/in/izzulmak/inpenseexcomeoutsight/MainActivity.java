@@ -11,6 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Calendar;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -40,8 +43,8 @@ public class MainActivity extends ActionBarActivity {
         {
             //-- no table yet, let's create all of them
             db.execSQL("CREATE TABLE IF NOT EXISTS accounts(id INT, name VARCHAR, type VARCHAR, balance INT, enabled BOOLEAN)"); //-- Main accounts
-            db.execSQL("CREATE TABLE IF NOT EXISTS account_balances(id INT, account_id INT, balance_before INT, balance INT, date DATE)");
-            db.execSQL("CREATE TABLE IF NOT EXISTS incomesexpenses(id INT, account_id INT, description VARCHAR, type VARCHAR, amount INT, date DATE)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS account_balances(id INT, base_account_id INT, balance_before INT, balance INT, date DATE)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS incomesexpenses(id INT, base_account_id INT, from_account_id INT, description VARCHAR, type VARCHAR, amount INT, date DATE)");
             db.execSQL("CREATE TABLE IF NOT EXISTS settings(name VARCHAR, value VARCHAR)");
 
             db.execSQL("INSERT INTO accounts VALUES(1, 'Cash in Hand', 'BASE', 0, 1)");
@@ -64,6 +67,7 @@ public class MainActivity extends ActionBarActivity {
         dbv_baseAccount_name = dbv_baseAccount.getString(2);
         tv_Accountname.setText("Base account: "+dbv_baseAccount_name);
         db.close();
+        updateIncomeTM();
     }
 
 
@@ -92,7 +96,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode!= Activity.RESULT_OK)
             return;
         switch (requestCode) {
@@ -115,6 +119,7 @@ public class MainActivity extends ActionBarActivity {
             }
 
         }
+        updateIncomeTM();
 
 
     }
@@ -122,7 +127,7 @@ public class MainActivity extends ActionBarActivity {
     public void gotoAddincome(View view)
     {
         Intent mi = new Intent(MainActivity.this, AddincomeActivity.class);
-        mi.putExtra("v_account",dbv_baseAccount_name);
+        mi.putExtra("v_account", dbv_baseAccount_name);
         mi.putExtra("v_account_id", dbv_baseAccount_id);
         MainActivity.this.startActivityForResult(mi, ROOM_ADDINCOME_ID);
     }
@@ -133,5 +138,54 @@ public class MainActivity extends ActionBarActivity {
         mi.putExtra("v_baseaccount_name",dbv_baseAccount_name);
         mi.putExtra("v_baseaccount_id",dbv_baseAccount_id);
         MainActivity.this.startActivityForResult(mi,ROOM_CHANGEBASEACCOUNT_ID);
+    }
+
+    public int getIncomeTM()
+    {
+        final Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH)+1;
+        int mDay = c.get(Calendar.DAY_OF_MONTH);
+        String thismonth = ""+mYear+"-"+String.format("%02d",mMonth)+"-01";
+
+        //dumpQuery("SELECT * FROM incomesexpenses WHERE type='INCOME' ; ");
+        SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
+        Cursor dbv_Income = db.rawQuery("SELECT SUM(amount) FROM incomesexpenses WHERE base_account_id='"+dbv_baseAccount_id+"' AND type='INCOME' AND date BETWEEN DATE('" + thismonth + "') AND DATE('" + thismonth + "','+1 month', '-1 day'); ", null);
+
+        //return dbv_Income.getCount();
+        ///*
+
+        if (dbv_Income.moveToNext())
+        {
+
+            return dbv_Income.getInt(0);
+        }
+        return -1;//*/
+    }
+
+    public void updateIncomeTM()
+    {
+        ((TextView) findViewById(R.id.tv_SumIncome)).setText(""+String.valueOf(getIncomeTM()));
+        return;
+    }
+
+    public void dumpQuery(String sqlitequery)
+    {
+        SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
+        Cursor dbv = db.rawQuery(sqlitequery,null);
+        String hasil = "";
+        while (dbv.moveToNext())
+        {
+            for (int i=0; i<dbv.getColumnCount(); i++)
+            {
+                hasil += dbv.getString(i)+", ";
+            }
+            hasil += "\n";
+        }
+
+        ((TextView) findViewById(R.id.tv_Accountname)).setText(hasil);
+        dbv.close();
+        db.close();
+        return;
     }
 }

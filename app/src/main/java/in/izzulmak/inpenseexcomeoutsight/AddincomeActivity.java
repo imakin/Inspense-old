@@ -48,7 +48,7 @@ public class AddincomeActivity extends ActionBarActivity {
         mDay = c.get(Calendar.DAY_OF_MONTH);
         bt_Addincome_Date_Pick = (Button) findViewById(R.id.bt_Addincome_Date_Pick);
 
-        bt_Addincome_Date_Pick.setText(mDay+"-"+(mMonth+1)+"-"+mYear);
+        bt_Addincome_Date_Pick.setText(String.format("%02d",mYear)+ "-" + String.format("%02d",mMonth+1) + "-" + String.format("%02d",mDay));
         bt_Addincome_Date_Pick.setOnClickListener(
             new View.OnClickListener() {
                 @Override
@@ -58,7 +58,7 @@ public class AddincomeActivity extends ActionBarActivity {
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                bt_Addincome_Date_Pick.setText(dayOfMonth + "-" + (monthOfYear+1) + "-" + year);
+                                bt_Addincome_Date_Pick.setText(String.format("%02d",year)+ "-" + String.format("%02d", monthOfYear + 1) + "-" + String.format("%02d",dayOfMonth));
                             }
                         },
                         mYear, mMonth, mDay
@@ -144,21 +144,21 @@ public class AddincomeActivity extends ActionBarActivity {
 
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename),MODE_PRIVATE,null);
         Cursor c = db.rawQuery("SELECT * FROM incomesexpenses;",null);
-        if (c.getCount()<1)
-            db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1), " +
-                    v_BaseAccount_id+",'desc','INCOME',"+amount+","+date+")");//--incometype = 1
+        if (c.getCount()>0)
+            db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1), '" +
+                    v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"')");//--incometype = 1
         else
-            db.execSQL("INSERT INTO incomesexpenses VALUES(1,"+v_BaseAccount_id+",'desc','INCOME',"+amount+","+date+")");
+            db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"') ");
         c.close();
         c = db.rawQuery("SELECT * FROM account_balances;",null);
-        if (c.getCount()<1)
+        if (c.getCount()>0)
             db.execSQL("INSERT INTO account_balances VALUES((SELECT id FROM account_balances ORDER BY id DESC LIMIT 1), " +
                     v_BaseAccount_id+",(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")," +
-                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+","+date+")");
+                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");
         else
             db.execSQL("INSERT INTO account_balances VALUES(1, " +
                     v_BaseAccount_id+",(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")," +
-                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+","+date+")");
+                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");
         db.execSQL("UPDATE accounts SET balance=balance+"+amount+" WHERE id="+v_BaseAccount_id+";");
         c.close();
         db.close();
