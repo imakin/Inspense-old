@@ -145,7 +145,7 @@ public class AddincomeActivity extends ActionBarActivity {
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename),MODE_PRIVATE,null);
         Cursor c = db.rawQuery("SELECT * FROM incomesexpenses;",null);
         if (c.getCount()>0)
-            db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1), '" +
+            db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1)+1, '" +
                     v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"')");//--incometype = 1
         else
             db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"') ");

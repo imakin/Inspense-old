@@ -26,5 +26,6 @@
     <string name="total_expense">Total Expense</string>
     <string name="title_activity_addexpense">Add Expense</string>
     <string name="title_activity_debug">DebugActivity</string>
+    <string name="title_activity_editexpense">Edit Expense Activity</string>
 
 </resources>

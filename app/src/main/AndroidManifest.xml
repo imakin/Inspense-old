@@ -48,6 +48,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
         </activity>
+        <activity
+            android:name=".EditexpenseActivity"
+            android:label="@string/title_activity_editexpense"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
