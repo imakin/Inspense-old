@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="databasename">mknincomeexpense.sqlite3</string>
     <string name="app_name">InpenseExcomeOutsight</string>
     <string name="hello_world">Hello world!</string>
@@ -22,4 +23,6 @@
     <string name="summary">Summary:</string>
     <string name="total_income">Total Income</string>
     <string name="total_expense">Total Expense</string>
+    <string name="title_activity_addexpense">Add Expense</string>
+
 </resources>

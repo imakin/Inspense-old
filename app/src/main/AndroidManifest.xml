@@ -32,6 +32,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
         </activity>
+        <activity
+            android:name=".AddexpenseActivity"
+            android:label="@string/title_activity_addexpense"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
