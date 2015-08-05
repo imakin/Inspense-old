@@ -11,6 +11,7 @@
     <string name="title_activity_addincome">Addincome</string>
     <string name="date">date</string>
     <string name="title_income">Income. Base account name: </string>
+    <string name="title_expense">Expense. Base account name: </string>
     <string name="account_name">Account Name:</string>
     <string name="amount">Amount</string>
     <string name="title_activity_changebaseaccount">ChangebaseaccountActivity</string>
@@ -24,5 +25,6 @@
     <string name="total_income">Total Income</string>
     <string name="total_expense">Total Expense</string>
     <string name="title_activity_addexpense">Add Expense</string>
+    <string name="title_activity_debug">DebugActivity</string>
 
 </resources>

@@ -119,6 +119,8 @@
                     android:text="@string/add_expense"
                     android:id="@+id/bt_Addexpense"
                     android:layout_gravity="bottom"
+
+                    android:onClick="gotoAddexpense"
                     />
             </LinearLayout>
             <LinearLayout

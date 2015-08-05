@@ -22,6 +22,7 @@ public class MainActivity extends ActionBarActivity {
     static int dbv_baseAccount_id;
     String dbv_baseAccount_name;
     static TextView tv_Accountname;
+    final static int ROOM_ADDEXPENSE_ID = 0;
     final static int ROOM_ADDINCOME_ID = 1;
     final static int ROOM_CHANGEBASEACCOUNT_ID = 2;
 
@@ -120,11 +121,16 @@ public class MainActivity extends ActionBarActivity {
                 }
                 break;
             }
-
         }
         updateIncomeTM();
         updateExpensesTM();
 
+    }
+
+    public void gotoDebug(MenuItem item)
+    {
+        Intent mi = new Intent(MainActivity.this, DebugActivity.class);
+        MainActivity.this.startActivity(mi);
     }
 
     public void gotoAddincome(View view)
@@ -134,6 +140,14 @@ public class MainActivity extends ActionBarActivity {
         mi.putExtra("v_account_id", dbv_baseAccount_id);
         MainActivity.this.startActivityForResult(mi, ROOM_ADDINCOME_ID);
     }
+    public void gotoAddexpense(View view)
+    {
+        Intent mi = new Intent(MainActivity.this, AddexpenseActivity.class);
+        mi.putExtra("v_account", dbv_baseAccount_name);
+        mi.putExtra("v_account_id", dbv_baseAccount_id);
+        MainActivity.this.startActivityForResult(mi, ROOM_ADDEXPENSE_ID);
+    }
+
 
     public void gotoChangebaseaccount(View view)
     {

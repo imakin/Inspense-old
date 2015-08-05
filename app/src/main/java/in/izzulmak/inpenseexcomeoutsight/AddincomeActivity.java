@@ -149,7 +149,7 @@ public class AddincomeActivity extends ActionBarActivity {
                     v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"')");//--incometype = 1
         else
             db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"') ");
-        c.close();
+        /*c.close();
         c = db.rawQuery("SELECT * FROM account_balances;",null);
         if (c.getCount()>0)
             db.execSQL("INSERT INTO account_balances VALUES((SELECT id FROM account_balances ORDER BY id DESC LIMIT 1), " +
@@ -158,7 +158,7 @@ public class AddincomeActivity extends ActionBarActivity {
         else
             db.execSQL("INSERT INTO account_balances VALUES(1, " +
                     v_BaseAccount_id+",(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")," +
-                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");
+                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");//*/
         db.execSQL("UPDATE accounts SET balance=balance+"+amount+" WHERE id="+v_BaseAccount_id+";");
         c.close();
         db.close();

@@ -40,6 +40,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
         </activity>
+        <activity
+            android:name=".DebugActivity"
+            android:label="@string/title_activity_debug"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
