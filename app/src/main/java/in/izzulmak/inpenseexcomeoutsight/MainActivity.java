@@ -13,7 +13,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -68,6 +70,7 @@ public class MainActivity extends ActionBarActivity {
         tv_Accountname.setText("Base account: "+dbv_baseAccount_name);
         db.close();
         updateIncomeTM();
+        updateExpensesTM();
     }
 
 
@@ -120,7 +123,7 @@ public class MainActivity extends ActionBarActivity {
 
         }
         updateIncomeTM();
-
+        updateExpensesTM();
 
     }
 
@@ -140,7 +143,8 @@ public class MainActivity extends ActionBarActivity {
         MainActivity.this.startActivityForResult(mi,ROOM_CHANGEBASEACCOUNT_ID);
     }
 
-    public int getIncomeTM()
+    public Double getThisMonthSummary(String type)
+            //-- type: 'INCOME', 'EXPENSE'
     {
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
@@ -150,22 +154,38 @@ public class MainActivity extends ActionBarActivity {
 
         //dumpQuery("SELECT * FROM incomesexpenses WHERE type='INCOME' ; ");
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
-        Cursor dbv_Income = db.rawQuery("SELECT SUM(amount) FROM incomesexpenses WHERE base_account_id='"+dbv_baseAccount_id+"' AND type='INCOME' AND date BETWEEN DATE('" + thismonth + "') AND DATE('" + thismonth + "','+1 month', '-1 day'); ", null);
+        Cursor dbv_Income = db.rawQuery("SELECT SUM(amount) FROM incomesexpenses WHERE base_account_id='"+dbv_baseAccount_id+"' AND type='"+type+"' AND date BETWEEN DATE('" + thismonth + "') AND DATE('" + thismonth + "','+1 month', '-1 day'); ", null);
 
         //return dbv_Income.getCount();
         ///*
 
         if (dbv_Income.moveToNext())
         {
-
-            return dbv_Income.getInt(0);
+            Double hasil = dbv_Income.getDouble(0);
+            dbv_Income.close();
+            db.close();
+            return hasil;
         }
-        return -1;//*/
+        else {
+            dbv_Income.close();
+            db.close();
+            return 0.0;//*/
+        }
     }
 
     public void updateIncomeTM()
     {
-        ((TextView) findViewById(R.id.tv_SumIncome)).setText(""+String.valueOf(getIncomeTM()));
+        //((TextView) findViewById(R.id.tv_SumIncome)).setText(NumberFormat.getCurrencyInstance().format(getThisMonthSummary("INCOME")));
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        ((TextView) findViewById(R.id.tv_SumIncome)).setText(nf.format(getThisMonthSummary("INCOME")));
+        return;
+    }
+
+    public void updateExpensesTM()
+    {
+        //((TextView) findViewById(R.id.tv_SumExpense)).setText(NumberFormat.getCurrencyInstance().format(getThisMonthSummary("EXPENSE")));
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        ((TextView) findViewById(R.id.tv_SumExpense)).setText(nf.format(getThisMonthSummary("EXPENSE")));
         return;
     }
 
