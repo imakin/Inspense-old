@@ -19,4 +19,7 @@
     <string name="create">Create</string>
     <string name="name">Name</string>
     <string name="save">Save</string>
+    <string name="summary">Summary:</string>
+    <string name="total_income">Total Income</string>
+    <string name="total_expense">Total Expense</string>
 </resources>

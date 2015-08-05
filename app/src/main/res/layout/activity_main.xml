@@ -8,40 +8,129 @@
     <TextView android:text="@string/account" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tv_Accountname" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_income"
-        android:id="@+id/bt_Addincome"
-        android:layout_below="@+id/tv_Accountname"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_marginTop="40dp"
-        android:layout_alignRight="@+id/bt_Addexpense"
-        android:layout_alignEnd="@+id/bt_Addexpense"
-        android:onClick="gotoAddincome"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_expense"
-        android:id="@+id/bt_Addexpense"
-        android:layout_below="@+id/bt_Addincome"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/summary" />
 
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/total_income" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/change_base_account"
-        android:id="@+id/bt_Changebaseaccount"
-        android:layout_below="@+id/bt_Addexpense"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"
-        android:onClick="gotoChangebaseaccount"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="400,000"
+                        android:editable="false"
+                        android:elegantTextHeight="false" />
 
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/total_expense" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="400,000"
+                        android:editable="false"
+                        android:elegantTextHeight="false" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom"
+            android:id="@+id/ll_ButtonWrapper">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_income"
+                    android:id="@+id/bt_Addincome"
+                    android:layout_gravity="bottom"
+
+                    android:onClick="gotoAddincome"
+                    />
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_expense"
+                    android:id="@+id/bt_Addexpense"
+                    android:layout_gravity="bottom"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_base_account"
+                    android:id="@+id/bt_Changebaseaccount"
+                    android:layout_marginTop="10dp"
+                    android:onClick="gotoChangebaseaccount"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>
