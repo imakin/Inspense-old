@@ -50,13 +50,14 @@
             android:id="@+id/tv_Cba_Add_Lbname"
             android:text="@string/account_name"
             android:layout_gravity="left|top"
+            android:layout_marginTop="10dp"
             />
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/et_Cba_Add_Name"
             android:layout_below="@+id/tv_Cba_Add_Lbname"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="40dp"
             />
 
         <Button
@@ -66,7 +67,7 @@
             android:id="@+id/bt_Cba_Add_Create"
             android:layout_below="@+id/et_Cba_Add_Name"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="70dp"
             android:onClick="dbCreateAccount"
             />
     </FrameLayout>

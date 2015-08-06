@@ -157,6 +157,12 @@ public class MainActivity extends ActionBarActivity {
         MainActivity.this.startActivityForResult(mi,ROOM_CHANGEBASEACCOUNT_ID);
     }
 
+    public void gotoEditexpenseActivity(MenuItem item)
+    {
+        Intent mi = new Intent(MainActivity.this, EditexpenseActivity.class);
+        MainActivity.this.startActivity(mi);
+    }
+
     public Double getThisMonthSummary(String type)
             //-- type: 'INCOME', 'EXPENSE'
     {

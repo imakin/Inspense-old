@@ -8,4 +8,9 @@
         android:orderInCategory="100"
         android:onClick="gotoDebug"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_editexpense"
+        android:title="Edit Expense"
+        android:orderInCategory="100"
+        android:onClick="gotoEditexpenseActivity"
+        app:showAsAction="never"/>
 </menu>
