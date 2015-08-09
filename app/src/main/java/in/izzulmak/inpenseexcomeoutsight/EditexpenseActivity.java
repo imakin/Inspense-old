@@ -54,6 +54,7 @@ public class EditexpenseActivity extends ActionBarActivity {
                 Button btc = new Button(ll.getContext());
                 ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btc.setLayoutParams(lp);
+                btc.setBackgroundResource(R.layout.listbutton);
                 btc.setText(dbv_thisdate.getString(dbv_thisdate.getColumnIndex("accounts.name")) + " \t " + dbv_thisdate.getString(dbv_thisdate.getColumnIndex("incomesexpenses.amount")));
                 ll.addView(btc);
             }
@@ -77,51 +78,6 @@ public class EditexpenseActivity extends ActionBarActivity {
         }
         dbv_dates.close();
         db.close();
-
-        /*
-        Cursor c = db.rawQuery("SELECT incomesexpenses.*,accounts.name from incomesexpenses LEFT JOIN accounts ON incomesexpenses.from_account_id=accounts.id WHERE incomesexpenses.type='EXPENSE' order by date;", null);
-        String group;
-        boolean newgroup = true;
-        while (c.moveToNext())
-        {
-            group = c.getString(c.getColumnIndex("date"));
-            if (newgroup) {
-                Button bt = new Button (container.getContext());
-                bt.setText(group);
-                container.addView(bt);
-
-                LinearLayout ll = new LinearLayout(container.getContext());
-                ll.setOrientation(LinearLayout.VERTICAL);
-                boolean lanjut=true;
-                while (lanjut)
-                {
-                    String thisgroup = c.getString(c.getColumnIndex("date"));
-
-                    if (thisgroup.equals(group))
-                    {
-                        Button btc = new Button(ll.getContext());
-                        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        btc.setLayoutParams(lp);
-                        btc.setText(c.getString(c.getColumnIndex("accounts.name")) + " \t " + c.getString(c.getColumnIndex("incomesexpenses.amount")));
-                        ll.addView(btc);
-                        lanjut = true;
-                    }
-                    else
-                    {
-                        c.moveToPrevious();
-                        newgroup = false;
-                        lanjut = false;
-                    }
-                    if (lanjut)
-                        if (!c.moveToNext()) {
-                            lanjut = false;
-                        }
-
-                }
-                container.addView(ll);
-            }
-        }
-        //*/
     }
 
 

@@ -4,86 +4,88 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="in.izzulmak.inpenseexcomeoutsight.AddexpenseActivity">
+    tools:context="in.izzulmak.inpenseexcomeoutsight.AddexpenseActivity"
+    android:background="#ffffffff">
 
-	<TextView android:text="@string/title_expense" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_Addexpense_Accountname"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/amount"
-        android:id="@+id/tv_Addexpense_Amount"
-        android:layout_below="@+id/tv_Addexpense_Accountname"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <EditText
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/et_Addexpense_Amount"
-        android:layout_below="@+id/tv_Addexpense_Amount"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+        android:orientation="vertical"
+        android:background="#ffffffff">
+        <TextView android:text="@string/title_expense" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_Addexpense_Accountname"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/amount"
+            android:id="@+id/tv_Addexpense_Amount"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/et_Addexpense_Amount"/>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/account"
-        android:id="@+id/tv_Addexpense_Account"
-        android:layout_below="@+id/et_Addexpense_Amount"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/account"
+            android:id="@+id/tv_Addexpense_Account"/>
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:ems="10"
-        android:id="@+id/bt_Addexpense_Account"
-        android:layout_below="@+id/tv_Addexpense_Account"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:ems="10"
+            android:id="@+id/bt_Addexpense_Account"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+            android:background="#ffeeeeee"
+            android:textColor="#ff000000" />
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/date"
-        android:id="@+id/tv_Addexpense_Date"
-        android:layout_below="@+id/bt_Addexpense_Account"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date"
+            android:id="@+id/tv_Addexpense_Date" />
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Pick Date"
-        android:id="@+id/bt_Addexpense_Date_Pick"
-        android:layout_below="@+id/tv_Addexpense_Date"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Pick Date"
+            android:id="@+id/bt_Addexpense_Date_Pick"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+            android:background="#ffeeeeee"
+            android:textColor="#ff000000" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:id="@+id/bt_Addexpense_Save"
-        android:layout_below="@+id/bt_Addexpense_Date_Pick"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-        android:onClick="saveData"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/description"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_Addexpense_Description"/>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:id="@+id/bt_Addexpense_Save"
+                android:layout_gravity="center"
+                android:onClick="saveData"
+                />
+        </FrameLayout>
+    </LinearLayout>
 
 </RelativeLayout>
