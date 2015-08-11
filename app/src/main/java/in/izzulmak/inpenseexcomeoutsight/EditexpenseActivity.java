@@ -16,20 +16,13 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-
 
 public class EditexpenseActivity extends ActionBarActivity {
     public static Menu editExpenseRoomMenu;
 
-    private static ArrayList<Integer> selected_ids;
-    public static Integer selected_idsIndex(Integer x) {return selected_ids.indexOf(x);}
-    public static void selected_idsAdd(Integer x) {selected_ids.add(x);}
-    public static void selected_idsRemove(int index) {selected_ids.remove(index);}
-
-    public static int selected_idsCount() { return selected_ids.size();}
+    //public CompoundButton.OnCheckedChangeListener incomesexpenseslistClicked = new CompoundButton.OnCheckedChangeListener() {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,44 +57,18 @@ public class EditexpenseActivity extends ActionBarActivity {
             int btcid = 500;
             while (dbv_thisdate.moveToNext())
             {
+                final Integer thisindex = dbv_thisdate.getInt(dbv_thisdate.getColumnIndex("id"));
+
                 ToggleButton btc = new ToggleButton(ll.getContext());
                 ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btc.setLayoutParams(lp);
-                btc.setId(btcid);
-                final int thisbtcid = btcid;
-                btcid += 1;
+                btc.setId(100+thisindex.intValue()); //-- the edit each item index is 100+`incomesexpenses`.`id`
                 btc.setBackgroundResource(R.layout.listbutton);
                 btc.setText(dbv_thisdate.getString(dbv_thisdate.getColumnIndex("accounts.name")) + " \t " + dbv_thisdate.getString(dbv_thisdate.getColumnIndex("incomesexpenses.amount")));
 
-                final Integer thisindex = dbv_thisdate.getInt(0);
+
                 //btc.setText(thisindex.toString());/*/
-                btc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        MenuItem deletethese = EditexpenseActivity.editExpenseRoomMenu.findItem(R.id.action_editexpense_delete);
-                        MenuItem editthis = EditexpenseActivity.editExpenseRoomMenu.findItem(R.id.action_editexpense_edit);
-                        /*
-                        if (b) {
-                            if (EditexpenseActivity.selected_idsIndex(thisindex) == -1) {
-                                EditexpenseActivity.selected_idsAdd(thisindex);
-                            }
-                        } else {
-                            if (EditexpenseActivity.selected_idsIndex(thisindex) != -1) {
-                                EditexpenseActivity.selected_idsRemove(EditexpenseActivity.selected_idsIndex(thisindex));
-                            }
-                        }
-                        int checkedtotal = EditexpenseActivity.selected_idsCount();
-                        if (checkedtotal == 0)
-                            deletethese.setVisible(false);
-                        else if (checkedtotal == 1) {
-                            editthis.setVisible(true);
-                            deletethese.setVisible(true);
-                        } else {
-                            editthis.setVisible(false);
-                            deletethese.setVisible(true);
-                        }*/
-                    }
-                });//*/
+                btc.setOnCheckedChangeListener(new listClickedClass(thisindex));//*/
                 ll.addView(btc);
             }
             container.addView(ll);
@@ -148,5 +115,4 @@ public class EditexpenseActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }
