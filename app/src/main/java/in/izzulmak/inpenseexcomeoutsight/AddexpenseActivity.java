@@ -27,7 +27,7 @@ public class AddexpenseActivity extends ActionBarActivity {
     Button bt_Addexpense_Account;
     private int mYear, mMonth, mDay;
     static String v_ExpenseAmount;
-    static int v_ExpenseAccount;
+    static int v_ExpenseAccount_id;
     static int v_BaseAccount_id;
     static String v_ExpenseDate;
 
@@ -50,22 +50,22 @@ public class AddexpenseActivity extends ActionBarActivity {
 
         bt_Addexpense_Date_Pick.setText(String.format("%02d",mYear)+ "-" + String.format("%02d",mMonth+1) + "-" + String.format("%02d",mDay));
         bt_Addexpense_Date_Pick.setOnClickListener(
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    DatePickerDialog dpd = new DatePickerDialog(AddexpenseActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                bt_Addexpense_Date_Pick.setText(String.format("%02d",year)+ "-" + String.format("%02d", monthOfYear + 1) + "-" + String.format("%02d",dayOfMonth));
-                            }
-                        },
-                        mYear, mMonth, mDay
-                    );
-                    dpd.show();
+                        DatePickerDialog dpd = new DatePickerDialog(AddexpenseActivity.this,
+                                new DatePickerDialog.OnDateSetListener() {
+                                    @Override
+                                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                        bt_Addexpense_Date_Pick.setText(String.format("%02d",year)+ "-" + String.format("%02d", monthOfYear + 1) + "-" + String.format("%02d",dayOfMonth));
+                                    }
+                                },
+                                mYear, mMonth, mDay
+                        );
+                        dpd.show();
+                    }
                 }
-            }
         );
 
 
@@ -99,13 +99,13 @@ public class AddexpenseActivity extends ActionBarActivity {
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddexpenseActivity.this);
                         builder.setTitle("Pick Expense Account Name");
                         builder.setItems(finalAccounts_list,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int item){
-                                    bt_Addexpense_Account.setText(finalAccounts_list[item]);
-                                    AddexpenseActivity.v_ExpenseAccount = finalAccounts_listID.get(item);
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int item){
+                                        bt_Addexpense_Account.setText(finalAccounts_list[item]);
+                                        AddexpenseActivity.v_ExpenseAccount_id = finalAccounts_listID.get(item);
+                                    }
                                 }
-                            }
                         );
                         builder.show();
                     }
@@ -139,26 +139,16 @@ public class AddexpenseActivity extends ActionBarActivity {
 
     public void saveData(View view) {
         String amount = ((EditText) findViewById(R.id.et_Addexpense_Amount)).getText().toString();
-        Integer account = v_ExpenseAccount;
         String date = ((Button) findViewById(R.id.bt_Addexpense_Date_Pick)).getText().toString();
+        String description = ((EditText) findViewById(R.id.et_Addexpense_Description)).getText().toString();
 
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename),MODE_PRIVATE,null);
         Cursor c = db.rawQuery("SELECT * FROM incomesexpenses;",null);
         if (c.getCount()>0)
             db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1)+1, '" +
-                    v_BaseAccount_id+"','"+v_ExpenseAccount+"','desc','EXPENSE','"+amount+"','"+date+"')");//--expensetype = 1
+                    v_BaseAccount_id+"','"+v_ExpenseAccount_id+"','"+description+"','EXPENSE','"+amount+"','"+date+"')");//--expensetype = 1
         else
-            db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_ExpenseAccount+"','desc','EXPENSE','"+amount+"','"+date+"') ");
-        /*c.close();
-        c = db.rawQuery("SELECT * FROM account_balances;",null);
-        if (c.getCount()>0)
-            db.execSQL("INSERT INTO account_balances VALUES((SELECT id FROM account_balances ORDER BY id DESC LIMIT 1), " +
-                    v_BaseAccount_id+",(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")," +
-                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");
-        else
-            db.execSQL("INSERT INTO account_balances VALUES(1, " +
-                    v_BaseAccount_id+",(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")," +
-                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");//*/
+            db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_ExpenseAccount_id+"','"+description+"','EXPENSE','"+amount+"','"+date+"') ");
         db.execSQL("UPDATE accounts SET balance=balance-"+amount+" WHERE id="+v_BaseAccount_id+";");
         c.close();
         db.close();

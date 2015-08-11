@@ -1,6 +1,7 @@
 package in.izzulmak.inpenseexcomeoutsight;
 
 import android.app.ActionBar;
+import android.content.ClipData;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.IdRes;
@@ -11,13 +12,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
 public class EditexpenseActivity extends ActionBarActivity {
+    public static Menu editExpenseRoomMenu;
+
+    private static ArrayList<Integer> selected_ids;
+    public static Integer selected_idsIndex(Integer x) {return selected_ids.indexOf(x);}
+    public static void selected_idsAdd(Integer x) {selected_ids.add(x);}
+    public static void selected_idsRemove(int index) {selected_ids.remove(index);}
+
+    public static int selected_idsCount() { return selected_ids.size();}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +43,7 @@ public class EditexpenseActivity extends ActionBarActivity {
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH)+1;
         String thismonth = ""+mYear+"-"+String.format("%02d",mMonth)+"-01";
-        Cursor dbv_dates = db.rawQuery("SELECT date FROM incomesexpenses WHERE date BETWEEN DATE('"+thismonth+"') AND DATE('"+thismonth+"','+1 month', '-1 day') GROUP BY date; ",null);
+        Cursor dbv_dates = db.rawQuery("SELECT date FROM incomesexpenses WHERE type='EXPENSE' AND date BETWEEN DATE('"+thismonth+"') AND DATE('"+thismonth+"','+1 month', '-1 day') GROUP BY date; ",null);
         while (dbv_dates.moveToNext())
         {
             String thisdate = dbv_dates.getString(0);
@@ -43,23 +55,56 @@ public class EditexpenseActivity extends ActionBarActivity {
             final LinearLayout ll = new LinearLayout(container.getContext());
             ll.setOrientation(LinearLayout.VERTICAL);
 
-            Cursor dbv_thisdate = db.rawQuery(
+            final Cursor dbv_thisdate = db.rawQuery(
                     "SELECT incomesexpenses.*, accounts.name FROM incomesexpenses " +
                         "LEFT JOIN accounts ON incomesexpenses.from_account_id=accounts.id " +
                         "WHERE incomesexpenses.type='EXPENSE' " +
                             "AND incomesexpenses.date='"+thisdate+"' ORDER BY date;"
                     , null);
+            int btcid = 500;
             while (dbv_thisdate.moveToNext())
             {
-                Button btc = new Button(ll.getContext());
+                ToggleButton btc = new ToggleButton(ll.getContext());
                 ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btc.setLayoutParams(lp);
+                btc.setId(btcid);
+                final int thisbtcid = btcid;
+                btcid += 1;
                 btc.setBackgroundResource(R.layout.listbutton);
                 btc.setText(dbv_thisdate.getString(dbv_thisdate.getColumnIndex("accounts.name")) + " \t " + dbv_thisdate.getString(dbv_thisdate.getColumnIndex("incomesexpenses.amount")));
+
+                final Integer thisindex = dbv_thisdate.getInt(0);
+                //btc.setText(thisindex.toString());/*/
+                btc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        MenuItem deletethese = EditexpenseActivity.editExpenseRoomMenu.findItem(R.id.action_editexpense_delete);
+                        MenuItem editthis = EditexpenseActivity.editExpenseRoomMenu.findItem(R.id.action_editexpense_edit);
+                        /*
+                        if (b) {
+                            if (EditexpenseActivity.selected_idsIndex(thisindex) == -1) {
+                                EditexpenseActivity.selected_idsAdd(thisindex);
+                            }
+                        } else {
+                            if (EditexpenseActivity.selected_idsIndex(thisindex) != -1) {
+                                EditexpenseActivity.selected_idsRemove(EditexpenseActivity.selected_idsIndex(thisindex));
+                            }
+                        }
+                        int checkedtotal = EditexpenseActivity.selected_idsCount();
+                        if (checkedtotal == 0)
+                            deletethese.setVisible(false);
+                        else if (checkedtotal == 1) {
+                            editthis.setVisible(true);
+                            deletethese.setVisible(true);
+                        } else {
+                            editthis.setVisible(false);
+                            deletethese.setVisible(true);
+                        }*/
+                    }
+                });//*/
                 ll.addView(btc);
             }
             container.addView(ll);
-            //ll.setVisibility(View.INVISIBLE);
             LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
             ll.setLayoutParams(lllp);
             dbv_thisdate.close();
@@ -83,6 +128,7 @@ public class EditexpenseActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        editExpenseRoomMenu = menu;
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_editexpense, menu);
         return true;
@@ -102,4 +148,5 @@ public class EditexpenseActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

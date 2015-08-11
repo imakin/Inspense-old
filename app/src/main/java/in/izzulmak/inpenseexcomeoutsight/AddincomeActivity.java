@@ -27,7 +27,7 @@ public class AddincomeActivity extends ActionBarActivity {
     Button bt_Addincome_Account;
     private int mYear, mMonth, mDay;
     static String v_IncomeAmount;
-    static int v_IncomeAccount;
+    static int v_IncomeAccount_id;
     static int v_BaseAccount_id;
     static String v_IncomeDate;
 
@@ -50,22 +50,22 @@ public class AddincomeActivity extends ActionBarActivity {
 
         bt_Addincome_Date_Pick.setText(String.format("%02d",mYear)+ "-" + String.format("%02d",mMonth+1) + "-" + String.format("%02d",mDay));
         bt_Addincome_Date_Pick.setOnClickListener(
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    DatePickerDialog dpd = new DatePickerDialog(AddincomeActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                bt_Addincome_Date_Pick.setText(String.format("%02d",year)+ "-" + String.format("%02d", monthOfYear + 1) + "-" + String.format("%02d",dayOfMonth));
-                            }
-                        },
-                        mYear, mMonth, mDay
-                    );
-                    dpd.show();
+                        DatePickerDialog dpd = new DatePickerDialog(AddincomeActivity.this,
+                                new DatePickerDialog.OnDateSetListener() {
+                                    @Override
+                                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                        bt_Addincome_Date_Pick.setText(String.format("%02d",year)+ "-" + String.format("%02d", monthOfYear + 1) + "-" + String.format("%02d",dayOfMonth));
+                                    }
+                                },
+                                mYear, mMonth, mDay
+                        );
+                        dpd.show();
+                    }
                 }
-            }
         );
 
 
@@ -99,13 +99,13 @@ public class AddincomeActivity extends ActionBarActivity {
                         AlertDialog.Builder builder = new AlertDialog.Builder(AddincomeActivity.this);
                         builder.setTitle("Pick Income Account Name");
                         builder.setItems(finalAccounts_list,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int item){
-                                    bt_Addincome_Account.setText(finalAccounts_list[item]);
-                                    AddincomeActivity.v_IncomeAccount = finalAccounts_listID.get(item);
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int item){
+                                        bt_Addincome_Account.setText(finalAccounts_list[item]);
+                                        AddincomeActivity.v_IncomeAccount_id = finalAccounts_listID.get(item);
+                                    }
                                 }
-                            }
                         );
                         builder.show();
                     }
@@ -139,26 +139,16 @@ public class AddincomeActivity extends ActionBarActivity {
 
     public void saveData(View view) {
         String amount = ((EditText) findViewById(R.id.et_Addincome_Amount)).getText().toString();
-        Integer account = v_IncomeAccount;
         String date = ((Button) findViewById(R.id.bt_Addincome_Date_Pick)).getText().toString();
+        String description = ((EditText) findViewById(R.id.et_Addincome_Description)).getText().toString();
 
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename),MODE_PRIVATE,null);
         Cursor c = db.rawQuery("SELECT * FROM incomesexpenses;",null);
         if (c.getCount()>0)
             db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1)+1, '" +
-                    v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"')");//--incometype = 1
+                    v_BaseAccount_id+"','"+v_IncomeAccount_id+"','"+description+"','INCOME','"+amount+"','"+date+"')");//--incometype = 1
         else
-            db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_IncomeAccount+"','desc','INCOME','"+amount+"','"+date+"') ");
-        /*c.close();
-        c = db.rawQuery("SELECT * FROM account_balances;",null);
-        if (c.getCount()>0)
-            db.execSQL("INSERT INTO account_balances VALUES((SELECT id FROM account_balances ORDER BY id DESC LIMIT 1), " +
-                    v_BaseAccount_id+",(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")," +
-                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");
-        else
-            db.execSQL("INSERT INTO account_balances VALUES(1, " +
-                    v_BaseAccount_id+",(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")," +
-                    "(SELECT balance FROM accounts WHERE id="+v_BaseAccount_id+")+"+amount+",'"+date+"')");//*/
+            db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_IncomeAccount_id+"','"+description+"','INCOME','"+amount+"','"+date+"') ");
         db.execSQL("UPDATE accounts SET balance=balance+"+amount+" WHERE id="+v_BaseAccount_id+";");
         c.close();
         db.close();
