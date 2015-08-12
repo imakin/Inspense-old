@@ -2,6 +2,7 @@ package in.izzulmak.inpenseexcomeoutsight;
 
 import android.app.ActionBar;
 import android.content.ClipData;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.IdRes;
@@ -21,16 +22,14 @@ import java.util.Calendar;
 
 public class EditexpenseActivity extends ActionBarActivity {
     public static Menu editExpenseRoomMenu;
-
-    //public CompoundButton.OnCheckedChangeListener incomesexpenseslistClicked = new CompoundButton.OnCheckedChangeListener() {
-
+    private ArrayList<Integer> incomesexpenseslist_ids; //-- carries the listed data from `incomesexpenses`
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editexpense);
 
+        incomesexpenseslist_ids = new ArrayList<Integer>();
         LinearLayout container = (LinearLayout) findViewById(R.id.ll_Editexpense);
-
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
@@ -57,15 +56,18 @@ public class EditexpenseActivity extends ActionBarActivity {
             int btcid = 500;
             while (dbv_thisdate.moveToNext())
             {
-                final Integer thisindex = dbv_thisdate.getInt(dbv_thisdate.getColumnIndex("id"));
+                Integer thisindex = dbv_thisdate.getInt(dbv_thisdate.getColumnIndex("id"));
 
                 ToggleButton btc = new ToggleButton(ll.getContext());
                 ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btc.setLayoutParams(lp);
-                btc.setId(100+thisindex.intValue()); //-- the edit each item index is 100+`incomesexpenses`.`id`
+                btc.setId(100 + thisindex.intValue()); //-- the edit each item index is 100+`incomesexpenses`.`id`
+                incomesexpenseslist_ids.add(thisindex);
                 btc.setBackgroundResource(R.layout.listbutton);
-                btc.setText(dbv_thisdate.getString(dbv_thisdate.getColumnIndex("accounts.name")) + " \t " + dbv_thisdate.getString(dbv_thisdate.getColumnIndex("incomesexpenses.amount")));
-
+                String thetext = dbv_thisdate.getString(dbv_thisdate.getColumnIndex("accounts.name")) + " \t " + dbv_thisdate.getString(dbv_thisdate.getColumnIndex("incomesexpenses.amount"));
+                btc.setText(thetext);
+                btc.setTextOff(thetext);
+                btc.setTextOn("[ "+thetext+" ]");
 
                 //btc.setText(thisindex.toString());/*/
                 btc.setOnCheckedChangeListener(new listClickedClass(thisindex));//*/
@@ -114,5 +116,32 @@ public class EditexpenseActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void menuEditThis(MenuItem item)
+    {
+        /*Integer selectedItem;
+        int i;
+        for (i=0;i<incomesexpenseslist_ids.size();i+=1)
+        {
+            try {
+                ToggleButton evaluatedbutton = ((ToggleButton) findViewById(incomesexpenseslist_ids.get(i) + 100));
+                if (evaluatedbutton.isChecked()) {
+                    selectedItem = i;
+                    evaluatedbutton.setText("Terkeculah Button INI");
+                    break;
+                }
+            }
+            catch (Exception e)
+            {
+                continue;
+            }
+        }*/
+
+    }
+
+    public void menuDeleteThese(MenuItem item)
+    {
+
     }
 }

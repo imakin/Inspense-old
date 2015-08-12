@@ -18,6 +18,7 @@ public class listClickedClass implements CompoundButton.OnCheckedChangeListener 
     public listClickedClass(Integer vthisindex)
     {
         thisindex = vthisindex;
+        selected_ids = new ArrayList<Integer>();
     }
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -34,8 +35,10 @@ public class listClickedClass implements CompoundButton.OnCheckedChangeListener 
             }
         }
         int checkedtotal = this.selected_idsCount();
-        if (checkedtotal == 0)
+        if (checkedtotal == 0) {
+            editthis.setVisible(false);
             deletethese.setVisible(false);
+        }
         else if (checkedtotal == 1) {
             editthis.setVisible(true);
             deletethese.setVisible(true);
