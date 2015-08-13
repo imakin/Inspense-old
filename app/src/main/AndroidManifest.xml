@@ -56,6 +56,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
         </activity>
+        <activity
+            android:name=".EditincomeActivity"
+            android:label="@string/title_activity_editincome"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.izzulmak.inpenseexcomeoutsight.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

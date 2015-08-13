@@ -9,8 +9,13 @@
         android:onClick="gotoDebug"
         app:showAsAction="never"/>
     <item android:id="@+id/action_editexpense"
-        android:title="Edit Expense"
+        android:title="Expenses"
         android:orderInCategory="100"
         android:onClick="gotoEditexpenseActivity"
+        app:showAsAction="never"/>
+    <item android:id="@+id/action_editincome"
+        android:title="Incomes"
+        android:orderInCategory="100"
+        android:onClick="gotoEditincomeActivity"
         app:showAsAction="never"/>
 </menu>

@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -25,6 +27,8 @@ public class MainActivity extends ActionBarActivity {
     final static int ROOM_ADDEXPENSE_ID = 0;
     final static int ROOM_ADDINCOME_ID = 1;
     final static int ROOM_CHANGEBASEACCOUNT_ID = 2;
+
+    public static SQLiteDatabase dbmain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +74,7 @@ public class MainActivity extends ActionBarActivity {
         dbv_baseAccount_name = dbv_baseAccount.getString(2);
         tv_Accountname.setText("Base account: "+dbv_baseAccount_name);
         db.close();
-        updateIncomeTM();
-        updateExpensesTM();
+        updateBalanceTM();
     }
 
 
@@ -122,8 +125,7 @@ public class MainActivity extends ActionBarActivity {
                 break;
             }
         }
-        updateIncomeTM();
-        updateExpensesTM();
+        updateBalanceTM();
 
     }
 
@@ -163,6 +165,12 @@ public class MainActivity extends ActionBarActivity {
         MainActivity.this.startActivity(mi);
     }
 
+    public void gotoEditincomeActivity(MenuItem item)
+    {
+        Intent mi = new Intent(MainActivity.this, EditincomeActivity.class);
+        MainActivity.this.startActivity(mi);
+    }
+
     public Double getThisMonthSummary(String type)
             //-- type: 'INCOME', 'EXPENSE'
     {
@@ -172,12 +180,8 @@ public class MainActivity extends ActionBarActivity {
         int mDay = c.get(Calendar.DAY_OF_MONTH);
         String thismonth = ""+mYear+"-"+String.format("%02d",mMonth)+"-01";
 
-        //dumpQuery("SELECT * FROM incomesexpenses WHERE type='INCOME' ; ");
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
         Cursor dbv_Income = db.rawQuery("SELECT SUM(amount) FROM incomesexpenses WHERE base_account_id='"+dbv_baseAccount_id+"' AND type='"+type+"' AND date BETWEEN DATE('" + thismonth + "') AND DATE('" + thismonth + "','+1 month', '-1 day'); ", null);
-
-        //return dbv_Income.getCount();
-        ///*
 
         if (dbv_Income.moveToNext())
         {
@@ -195,7 +199,6 @@ public class MainActivity extends ActionBarActivity {
 
     public void updateIncomeTM()
     {
-        //((TextView) findViewById(R.id.tv_SumIncome)).setText(NumberFormat.getCurrencyInstance().format(getThisMonthSummary("INCOME")));
         NumberFormat nf = NumberFormat.getCurrencyInstance();
         ((TextView) findViewById(R.id.tv_SumIncome)).setText(nf.format(getThisMonthSummary("INCOME")));
         return;
@@ -203,10 +206,21 @@ public class MainActivity extends ActionBarActivity {
 
     public void updateExpensesTM()
     {
-        //((TextView) findViewById(R.id.tv_SumExpense)).setText(NumberFormat.getCurrencyInstance().format(getThisMonthSummary("EXPENSE")));
         NumberFormat nf = NumberFormat.getCurrencyInstance();
         ((TextView) findViewById(R.id.tv_SumExpense)).setText(nf.format(getThisMonthSummary("EXPENSE")));
         return;
+    }
+
+    public void updateBalanceTM()
+    {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        Double in;
+        Double ex;
+        in = getThisMonthSummary("INCOME");
+        ex = getThisMonthSummary("EXPENSE");
+        ((TextView) findViewById(R.id.tv_SumIncome)).setText(nf.format(in));
+        ((TextView) findViewById(R.id.tv_SumExpense)).setText(nf.format(ex));
+        ((TextView) findViewById(R.id.tv_SumBalance)).setText(nf.format(in-ex));
     }
 
     public void dumpQuery(String sqlitequery)

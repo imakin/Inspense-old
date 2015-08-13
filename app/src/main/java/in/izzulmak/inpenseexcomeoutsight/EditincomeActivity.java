@@ -18,8 +18,8 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class EditexpenseActivity extends ActionBarActivity {
-    public static Menu editExpenseRoomMenu;
+public class EditincomeActivity extends ActionBarActivity {
+    public static Menu editIncomeRoomMenu;
     private ArrayList<Integer> incomesexpenseslist_ids; //-- carries the listed data from `incomesexpenses`
     static int dbv_baseAccount_id;
     String dbv_baseAccount_name;
@@ -28,18 +28,18 @@ public class EditexpenseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_editexpense);
-        new ListExpenseClickedClass(0);
-        ListExpenseClickedClass.selected_idsClear();
+        setContentView(R.layout.activity_editincome);
+        new ListIncomeClickedClass(0);
+        ListIncomeClickedClass.selected_idsClear();
 
         incomesexpenseslist_ids = new ArrayList<Integer>();
-        LinearLayout container = (LinearLayout) findViewById(R.id.ll_Editexpense);
+        LinearLayout container = (LinearLayout) findViewById(R.id.ll_Editincome);
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH)+1;
         String thismonth = ""+mYear+"-"+String.format("%02d",mMonth)+"-01";
-        Cursor dbv_dates = db.rawQuery("SELECT date FROM incomesexpenses WHERE type='EXPENSE' AND date BETWEEN DATE('"+thismonth+"') AND DATE('"+thismonth+"','+1 month', '-1 day') GROUP BY date; ",null);
+        Cursor dbv_dates = db.rawQuery("SELECT date FROM incomesexpenses WHERE type='INCOME' AND date BETWEEN DATE('"+thismonth+"') AND DATE('"+thismonth+"','+1 month', '-1 day') GROUP BY date; ",null);
         while (dbv_dates.moveToNext())
         {
             String thisdate = dbv_dates.getString(0);
@@ -53,8 +53,8 @@ public class EditexpenseActivity extends ActionBarActivity {
 
             final Cursor dbv_thisdate = db.rawQuery(
                     "SELECT incomesexpenses.*, accounts.name FROM incomesexpenses " +
-                        "LEFT JOIN accounts ON incomesexpenses.from_account_id=accounts.id " +
-                        "WHERE incomesexpenses.type='EXPENSE' " +
+                            "LEFT JOIN accounts ON incomesexpenses.from_account_id=accounts.id " +
+                            "WHERE incomesexpenses.type='INCOME' " +
                             "AND incomesexpenses.date='"+thisdate+"' ORDER BY date;"
                     , null);
             int btcid = 500;
@@ -65,7 +65,7 @@ public class EditexpenseActivity extends ActionBarActivity {
                 ToggleButton btc = new ToggleButton(ll.getContext());
                 ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 btc.setLayoutParams(lp);
-                btc.setId(100 + thisindex.intValue()); //-- the edit each item index is 100+`incomesexpenses`.`id`
+                btc.setId(200 + thisindex.intValue()); //-- the edit each item index is 100+`incomesexpenses`.`id`
                 incomesexpenseslist_ids.add(thisindex);
                 btc.setBackgroundResource(R.layout.listbutton);
                 String thetext = dbv_thisdate.getString(dbv_thisdate.getColumnIndex("accounts.name")) + " \t " + dbv_thisdate.getString(dbv_thisdate.getColumnIndex("incomesexpenses.amount"));
@@ -74,7 +74,7 @@ public class EditexpenseActivity extends ActionBarActivity {
                 btc.setTextOn("[ "+thetext+" ]");
 
                 //btc.setText(thisindex.toString());/*/
-                btc.setOnCheckedChangeListener(new ListExpenseClickedClass(thisindex));//*/
+                btc.setOnCheckedChangeListener(new ListIncomeClickedClass(thisindex));//*/
                 ll.addView(btc);
             }
             container.addView(ll);
@@ -101,9 +101,9 @@ public class EditexpenseActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        editExpenseRoomMenu = menu;
+        editIncomeRoomMenu = menu;
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_editexpense, menu);
+        getMenuInflater().inflate(R.menu.menu_editincome, menu);
         return true;
     }
 
@@ -123,36 +123,36 @@ public class EditexpenseActivity extends ActionBarActivity {
     }
     public void menuEditThis(MenuItem item)
     {
-        int id = ListExpenseClickedClass.selected_idsGet(0);
+        int id = ListIncomeClickedClass.selected_idsGet(0);
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
-        Cursor dbv_tobeEdit = db.rawQuery("SELECT incomesexpenses.*, base_accounts.name as bname, expense_accounts.name as expname FROM incomesexpenses " +
-                                            "LEFT JOIN accounts as base_accounts ON incomesexpenses.base_account_id=base_accounts.id " +
-                                            "LEFT JOIN accounts as expense_accounts ON incomesexpenses.from_account_id=expense_accounts.id " +
-                                            "WHERE incomesexpenses.id='" + id + "';", null);
+        Cursor dbv_tobeEdit = db.rawQuery("SELECT incomesexpenses.*, base_accounts.name as bname, income_accounts.name as incname FROM incomesexpenses " +
+                "LEFT JOIN accounts as base_accounts ON incomesexpenses.base_account_id=base_accounts.id " +
+                "LEFT JOIN accounts as income_accounts ON incomesexpenses.from_account_id=income_accounts.id " +
+                "WHERE incomesexpenses.id='" + id + "';", null);
         if (dbv_tobeEdit.moveToNext()) {
             String base_account_id = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("base_account_id"));
             String base_account_name = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("bname"));
-            String expense_account_id = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("from_account_id"));
-            String expense_account_name = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("expname"));
+            String income_account_id = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("from_account_id"));
+            String income_account_name = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("incname"));
             String amount = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("amount"));
             String description = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("description"));
             String date = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("date"));
 
-            Intent mi = new Intent(EditexpenseActivity.this, AddexpenseActivity.class);
+            Intent mi = new Intent(EditincomeActivity.this, AddincomeActivity.class);
             mi.putExtra("isEditing",1);
             mi.putExtra("v_account", base_account_name);
             mi.putExtra("v_account_id", base_account_id);
-            mi.putExtra("v_expense_account_id", expense_account_id);
-            mi.putExtra("v_expense_account_name", expense_account_name);
+            mi.putExtra("v_income_account_id", income_account_id);
+            mi.putExtra("v_income_account_name", income_account_name);
             mi.putExtra("v_amount", amount);
             mi.putExtra("v_description", description);
             mi.putExtra("v_date", date);
             mi.putExtra("v_idEdit", id);
 
-            EditexpenseActivity.this.startActivityForResult(mi, 999);
+            EditincomeActivity.this.startActivityForResult(mi, 999);
         }
         dbv_tobeEdit.close();
-        ListExpenseClickedClass.selected_idsClear();
+        ListIncomeClickedClass.selected_idsClear();
     }
 
     public void menuDeleteThese(MenuItem item)
@@ -166,17 +166,17 @@ public class EditexpenseActivity extends ActionBarActivity {
                 SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
 
                 int iter;
-                for (iter = 0; iter < ListExpenseClickedClass.selected_idsCount(); iter++) {
-                    db.execSQL("DELETE FROM incomesexpenses WHERE id='" + ListExpenseClickedClass.selected_idsGet(iter) + "';");
-                    ToggleButton theitem = ((ToggleButton) findViewById(ListExpenseClickedClass.selected_idsGet(iter) + 100));
+                for (iter = 0; iter < ListIncomeClickedClass.selected_idsCount(); iter++) {
+                    db.execSQL("DELETE FROM incomesexpenses WHERE id='" + ListIncomeClickedClass.selected_idsGet(iter) + "';");
+                    ToggleButton theitem = ((ToggleButton) findViewById(ListIncomeClickedClass.selected_idsGet(iter) + 200));
                     try {
                         theitem.setChecked(false);
                         theitem.setVisibility(View.GONE);
-                    } catch (Exception e) {
                     }
+                    catch (Exception e) {}
                 }
                 db.close();
-                ListExpenseClickedClass.selected_idsClear();
+                ListIncomeClickedClass.selected_idsClear();
             }
         });
         confirm.show();

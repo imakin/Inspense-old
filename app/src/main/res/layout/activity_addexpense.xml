@@ -16,6 +16,18 @@
             android:layout_height="wrap_content"
             android:id="@+id/tv_Addexpense_Accountname"
             />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_Addexpense_IdEdit"
+            android:text=""
+            android:visibility="visible"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_Addexpense_ExpenseAccountIdEdit"
+            android:text=""
+            android:visibility="visible"/>
 
         <TextView
             android:layout_width="wrap_content"

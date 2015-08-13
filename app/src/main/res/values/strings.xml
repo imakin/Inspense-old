@@ -22,10 +22,12 @@
     <string name="name">Name</string>
     <string name="save">Save</string>
     <string name="summary">Summary:</string>
+    <string name="balance">Balance</string>
     <string name="total_income">Total Income</string>
     <string name="total_expense">Total Expense</string>
     <string name="title_activity_addexpense">Add Expense</string>
     <string name="title_activity_debug">DebugActivity</string>
     <string name="title_activity_editexpense">Expenses</string>
     <string name="description">Description</string>
+    <string name="title_activity_editincome">EditincomeActivity</string>
 </resources>

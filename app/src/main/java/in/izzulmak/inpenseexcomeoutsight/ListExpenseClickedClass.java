@@ -8,14 +8,16 @@ import java.util.ArrayList;
 /**
  * Created by makin on 11/08/15.
  */
-public class listClickedClass implements CompoundButton.OnCheckedChangeListener {
+public class ListExpenseClickedClass implements CompoundButton.OnCheckedChangeListener {
     private static ArrayList<Integer> selected_ids;
     public static Integer selected_idsIndex(Integer x) {return selected_ids.indexOf(x);}
     public static void selected_idsAdd(Integer x) {selected_ids.add(x);}
     public static void selected_idsRemove(int index) {selected_ids.remove(index);}
     public static int selected_idsCount() { return selected_ids.size();}
+    public static int selected_idsGet(int index) {return selected_ids.get(index);}
+    public static void selected_idsClear() {selected_ids.clear();}
     private Integer thisindex;
-    public listClickedClass(Integer vthisindex)
+    public ListExpenseClickedClass(Integer vthisindex)
     {
         thisindex = vthisindex;
         selected_ids = new ArrayList<Integer>();

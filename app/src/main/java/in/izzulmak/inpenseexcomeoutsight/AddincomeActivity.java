@@ -17,6 +17,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -30,15 +32,21 @@ public class AddincomeActivity extends ActionBarActivity {
     static int v_IncomeAccount_id;
     static int v_BaseAccount_id;
     static String v_IncomeDate;
+    private int isEditing;
+    private int editId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addincome);
 
+        SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
+
         Intent ti = getIntent();
         String v_account = ti.getStringExtra("v_account");
-        v_BaseAccount_id= ti.getIntExtra("v_account_id",1);
+        v_BaseAccount_id = ti.getIntExtra("v_account_id",1);
+        isEditing = ti.getIntExtra("isEditing",0);
+
         final TextView tv_Addincome_Accountname = (TextView) findViewById(R.id.tv_Addincome_Accountname);
         tv_Addincome_Accountname.setText(this.getString(R.string.title_income)+" "+v_account);
 
@@ -47,8 +55,8 @@ public class AddincomeActivity extends ActionBarActivity {
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
         bt_Addincome_Date_Pick = (Button) findViewById(R.id.bt_Addincome_Date_Pick);
-
         bt_Addincome_Date_Pick.setText(String.format("%02d",mYear)+ "-" + String.format("%02d",mMonth+1) + "-" + String.format("%02d",mDay));
+
         bt_Addincome_Date_Pick.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -68,11 +76,6 @@ public class AddincomeActivity extends ActionBarActivity {
                 }
         );
 
-
-        final CharSequence[] v_accounts_in = {"Main Income", "Cash in Hand", "Bank Withdraw"};
-        final CharSequence[] v_accounts_out = {"Eating", "Transportation", "Infaq", "Personal Care", "Utilities"};
-
-        SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename),MODE_PRIVATE,null);
         Cursor dbv_accounts = db.rawQuery("SELECT * FROM accounts WHERE type='INCOME';",null);
         //-- Make ArrayList and push every needed row value
         ArrayList<CharSequence> ALaccounts_list = new ArrayList<CharSequence>();
@@ -112,6 +115,25 @@ public class AddincomeActivity extends ActionBarActivity {
                 }
         );
 
+
+        if (isEditing==1)
+        {
+            editId = ti.getIntExtra("v_idEdit", -1);
+            String v_amount = ti.getStringExtra("v_amount");
+            String v_income_account_id = ti.getStringExtra("v_income_account_id");
+            String v_income_account_name = ti.getStringExtra("v_income_account_name");
+            String v_description = ti.getStringExtra("v_description");
+            String v_date = ti.getStringExtra("v_date");
+
+            /*amount*/                      ((EditText) findViewById(R.id.et_Addincome_Amount)).setText(v_amount);
+            /*incomeaccount id*/           AddincomeActivity.v_IncomeAccount_id = Integer.valueOf(v_income_account_id).intValue();
+            /*incomeaccount name (pick)*/  bt_Addincome_Account.setText(v_income_account_name);
+            /*description*/                 ((EditText) findViewById(R.id.et_Addincome_Description)).setText(v_description);
+            /*date*/                        bt_Addincome_Date_Pick.setText(v_date);
+
+            ((TextView) findViewById(R.id.tv_Addincome_IdEdit)).setText(""+editId);
+        }
+
     }
 
 
@@ -142,15 +164,26 @@ public class AddincomeActivity extends ActionBarActivity {
         String date = ((Button) findViewById(R.id.bt_Addincome_Date_Pick)).getText().toString();
         String description = ((EditText) findViewById(R.id.et_Addincome_Description)).getText().toString();
 
-        SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename),MODE_PRIVATE,null);
-        Cursor c = db.rawQuery("SELECT * FROM incomesexpenses;",null);
-        if (c.getCount()>0)
-            db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1)+1, '" +
-                    v_BaseAccount_id+"','"+v_IncomeAccount_id+"','"+description+"','INCOME','"+amount+"','"+date+"')");//--incometype = 1
+        SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
+        if (isEditing==1)
+        {
+            db.execSQL("UPDATE incomesexpenses SET from_account_id='"+v_IncomeAccount_id+"', " +
+                    "description='"+description+"'," +
+                    "amount='"+amount+"'," +
+                    "date='"+date+"' " +
+                    "WHERE id="+editId+"");
+        }
         else
-            db.execSQL("INSERT INTO incomesexpenses VALUES(1,'"+v_BaseAccount_id+"','"+v_IncomeAccount_id+"','"+description+"','INCOME','"+amount+"','"+date+"') ");
-        db.execSQL("UPDATE accounts SET balance=balance+"+amount+" WHERE id="+v_BaseAccount_id+";");
-        c.close();
+        {
+            Cursor c = db.rawQuery("SELECT * FROM incomesexpenses;", null);
+            if (c.getCount() > 0)
+                db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1)+1, '" +
+                        v_BaseAccount_id + "','" + v_IncomeAccount_id + "','" + description + "','INCOME','" + amount + "','" + date + "')");//--incometype = 1
+            else
+                db.execSQL("INSERT INTO incomesexpenses VALUES(1,'" + v_BaseAccount_id + "','" + v_IncomeAccount_id + "','" + description + "','INCOME','" + amount + "','" + date + "') ");
+            c.close();
+        }
+        db.execSQL("UPDATE accounts SET balance=balance-" + amount + " WHERE id=" + v_BaseAccount_id + ";");
         db.close();
         Intent i = new Intent();
         setResult(RESULT_OK,i);
