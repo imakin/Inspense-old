@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -27,13 +28,16 @@ public class AddexpenseActivity extends ActionBarActivity {
 
     Button bt_Addexpense_Date_Pick;
     Button bt_Addexpense_Account;
+    Button bt_Addexpense_AccountTrans;
     private int mYear, mMonth, mDay;
     static String v_ExpenseAmount;
     static int v_ExpenseAccount_id;
+    static int v_TransferAccount_id;
     static int v_BaseAccount_id;
     static String v_ExpenseDate;
     private int isEditing;
     private int editId;
+    private boolean isTransfer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,7 @@ public class AddexpenseActivity extends ActionBarActivity {
 
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
 
+        isTransfer = false;
         Intent ti = getIntent();
         String v_account = ti.getStringExtra("v_account");
         v_BaseAccount_id = ti.getIntExtra("v_account_id",1);
@@ -75,7 +80,7 @@ public class AddexpenseActivity extends ActionBarActivity {
                     }
                 }
         );
-
+        //-- for normal Expense account
         Cursor dbv_accounts = db.rawQuery("SELECT * FROM accounts WHERE type='EXPENSE';",null);
         //-- Make ArrayList and push every needed row value
         ArrayList<CharSequence> ALaccounts_list = new ArrayList<CharSequence>();
@@ -86,12 +91,26 @@ public class AddexpenseActivity extends ActionBarActivity {
             ALaccounts_list.add(row);
             accounts_listID.add(dbv_accounts.getInt(dbv_accounts.getColumnIndex("id")));
         }
-        db.close();
         //-- covert the ArrayList to an Array
         CharSequence[] accounts_list = new CharSequence[ALaccounts_list.size()];
         accounts_list = ALaccounts_list.toArray(accounts_list);
         final CharSequence[] finalAccounts_list = accounts_list; //-- The array is ready to use in AlertDialog.Builder.setItems
         final ArrayList<Integer> finalAccounts_listID = accounts_listID;
+
+        //-- for transfer Expense account
+        Cursor dbv_accountsbase = db.rawQuery("SELECT * FROM accounts WHERE type='BASE';",null);
+        ArrayList<CharSequence> ALaccountsbase_list = new ArrayList<CharSequence>();
+        ArrayList<Integer> accountsbase_listID = new ArrayList<Integer>();
+        while (dbv_accountsbase.moveToNext())
+        {
+            String row = dbv_accountsbase.getString(dbv_accountsbase.getColumnIndex("name"));
+            ALaccountsbase_list.add(row);
+            accountsbase_listID.add(dbv_accountsbase.getInt(dbv_accountsbase.getColumnIndex("id")));
+        }
+        CharSequence[] accountsbase_list = new CharSequence[ALaccountsbase_list.size()];
+        accountsbase_list = ALaccountsbase_list.toArray(accountsbase_list);
+        final CharSequence[] finalAccountsbase_list = accountsbase_list;
+        final ArrayList<Integer> finalAccountsbase_listID = accountsbase_listID;
 
 
         bt_Addexpense_Account = (Button) findViewById(R.id.bt_Addexpense_Account);
@@ -115,6 +134,27 @@ public class AddexpenseActivity extends ActionBarActivity {
                 }
         );
 
+        bt_Addexpense_AccountTrans = (Button) findViewById(R.id.bt_Addexpense_AccountTrans);
+        bt_Addexpense_AccountTrans.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AddexpenseActivity.this);
+                        builder.setTitle("Pick Base Account To Transfer Into");
+                        builder.setItems(finalAccountsbase_list,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int item){
+                                        bt_Addexpense_AccountTrans.setText(finalAccountsbase_list[item]);
+                                        AddexpenseActivity.v_TransferAccount_id = finalAccountsbase_listID.get(item);
+                                    }
+                                }
+                        );
+                        builder.show();
+                    }
+                }
+        );
+
 
         if (isEditing==1)
         {
@@ -124,16 +164,23 @@ public class AddexpenseActivity extends ActionBarActivity {
             String v_expense_account_name = ti.getStringExtra("v_expense_account_name");
             String v_description = ti.getStringExtra("v_description");
             String v_date = ti.getStringExtra("v_date");
+            String v_type = ti.getStringExtra("v_type");
 
             /*amount*/                      ((EditText) findViewById(R.id.et_Addexpense_Amount)).setText(v_amount);
             /*expenseaccount id*/           AddexpenseActivity.v_ExpenseAccount_id = Integer.valueOf(v_expense_account_id).intValue();
             /*expenseaccount name (pick)*/  bt_Addexpense_Account.setText(v_expense_account_name);
             /*description*/                 ((EditText) findViewById(R.id.et_Addexpense_Description)).setText(v_description);
             /*date*/                        bt_Addexpense_Date_Pick.setText(v_date);
+            if (v_type=="TRANSFEREXPENSE")
+            {
+                /*transfer account id*/         AddexpenseActivity.v_TransferAccount_id = Integer.valueOf(v_expense_account_id).intValue();
+                /*transfer account name*/       bt_Addexpense_AccountTrans.setText(v_expense_account_name);
+            }
 
             ((TextView) findViewById(R.id.tv_Addexpense_IdEdit)).setText(""+editId);
         }
 
+        db.close();
     }
 
 
@@ -163,12 +210,20 @@ public class AddexpenseActivity extends ActionBarActivity {
         String amount = ((EditText) findViewById(R.id.et_Addexpense_Amount)).getText().toString();
         String date = ((Button) findViewById(R.id.bt_Addexpense_Date_Pick)).getText().toString();
         String description = ((EditText) findViewById(R.id.et_Addexpense_Description)).getText().toString();
-
+        int baseid = v_BaseAccount_id;
+        int expenseid = v_ExpenseAccount_id;
+        String type = "EXPENSE";
+        if (isTransfer) {
+            expenseid = v_TransferAccount_id;
+            type = "TRANSFEREXPENSE";
+        }
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
         if (isEditing==1)
         {
-            db.execSQL("UPDATE incomesexpenses SET from_account_id='"+v_ExpenseAccount_id+"', " +
+            db.execSQL("UPDATE incomesexpenses SET " +
+                    "from_account_id='"+expenseid+"', " +
                     "description='"+description+"'," +
+                    "type='"+type+"'," +
                     "amount='"+amount+"'," +
                     "date='"+date+"' " +
                     "WHERE id="+editId+"");
@@ -178,15 +233,29 @@ public class AddexpenseActivity extends ActionBarActivity {
             Cursor c = db.rawQuery("SELECT * FROM incomesexpenses;", null);
             if (c.getCount() > 0)
                 db.execSQL("INSERT INTO incomesexpenses VALUES((SELECT id FROM incomesexpenses ORDER BY id DESC LIMIT 1)+1, '" +
-                        v_BaseAccount_id + "','" + v_ExpenseAccount_id + "','" + description + "','EXPENSE','" + amount + "','" + date + "')");//--expensetype = 1
+                        baseid + "','" + expenseid + "','" + description + "','"+type+"','" + amount + "','" + date + "')");//--expensetype = 1
             else
-                db.execSQL("INSERT INTO incomesexpenses VALUES(1,'" + v_BaseAccount_id + "','" + v_ExpenseAccount_id + "','" + description + "','EXPENSE','" + amount + "','" + date + "') ");
+                db.execSQL("INSERT INTO incomesexpenses VALUES(1,'" + baseid + "','" + expenseid + "','" + description + "','"+type+"','" + amount + "','" + date + "') ");
             c.close();
         }
-        db.execSQL("UPDATE accounts SET balance=balance-" + amount + " WHERE id=" + v_BaseAccount_id + ";");
+        db.execSQL("UPDATE accounts SET balance=balance-" + amount + " WHERE id=" + baseid + ";");
         db.close();
         Intent i = new Intent();
         setResult(RESULT_OK,i);
         finish();
+    }
+    public void toggleExpense(View view)
+    {
+        Switch sw = (Switch) findViewById(R.id.sw_Addexpense_Switch);
+        if (sw.isChecked()) {
+            isTransfer = true;
+            ((Button) findViewById(R.id.bt_Addexpense_Account)).setVisibility(Button.GONE);
+            ((Button) findViewById(R.id.bt_Addexpense_AccountTrans)).setVisibility(Button.VISIBLE);
+        }
+        else {
+            isTransfer = false;
+            ((Button) findViewById(R.id.bt_Addexpense_Account)).setVisibility(Button.VISIBLE);
+            ((Button) findViewById(R.id.bt_Addexpense_AccountTrans)).setVisibility(Button.GONE);
+        }
     }
 }

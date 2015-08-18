@@ -29,6 +29,17 @@
             android:text=""
             android:visibility="visible"/>
 
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textOff="Normal Expense"
+            android:textOn="Transfer Expense"
+            android:showText="true"
+            android:onClick="toggleExpense"
+            android:id="@+id/sw_Addexpense_Switch"
+            android:layout_gravity="center_horizontal" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,8 +68,18 @@
             android:id="@+id/bt_Addexpense_Account"
             style="@android:style/Widget.DeviceDefault.Button.Borderless"
             android:background="#ffeeeeee"
-            android:textColor="#ff000000" />
-
+            android:textColor="#ff000000"
+            android:visibility="visible"/>
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:ems="10"
+            android:id="@+id/bt_Addexpense_AccountTrans"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+            android:background="#ffeeeeee"
+            android:textColor="#ff000000"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="wrap_content"

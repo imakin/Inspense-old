@@ -181,7 +181,13 @@ public class MainActivity extends ActionBarActivity {
         String thismonth = ""+mYear+"-"+String.format("%02d",mMonth)+"-01";
 
         SQLiteDatabase db = openOrCreateDatabase(getResources().getString(R.string.databasename), MODE_PRIVATE, null);
-        Cursor dbv_Income = db.rawQuery("SELECT SUM(amount) FROM incomesexpenses WHERE base_account_id='"+dbv_baseAccount_id+"' AND type='"+type+"' AND date BETWEEN DATE('" + thismonth + "') AND DATE('" + thismonth + "','+1 month', '-1 day'); ", null);
+        Cursor dbv_Income;
+        if (type=="TRANSFERINCOME")
+        {//--this one is a bit different
+            dbv_Income = db.rawQuery("SELECT SUM(amount) FROM incomesexpenses WHERE from_account_id='" + dbv_baseAccount_id + "' AND type='TRANSFEREXPENSE' AND date BETWEEN DATE('" + thismonth + "') AND DATE('" + thismonth + "','+1 month', '-1 day'); ", null);
+        }
+        else
+            dbv_Income = db.rawQuery("SELECT SUM(amount) FROM incomesexpenses WHERE base_account_id='" + dbv_baseAccount_id + "' AND type='" + type + "' AND date BETWEEN DATE('" + thismonth + "') AND DATE('" + thismonth + "','+1 month', '-1 day'); ", null);
 
         if (dbv_Income.moveToNext())
         {
@@ -214,13 +220,19 @@ public class MainActivity extends ActionBarActivity {
     public void updateBalanceTM()
     {
         NumberFormat nf = NumberFormat.getCurrencyInstance();
-        Double in;
-        Double ex;
+        Double in,transIn;
+        Double ex,transEx;
         in = getThisMonthSummary("INCOME");
         ex = getThisMonthSummary("EXPENSE");
+        transIn = getThisMonthSummary("TRANSFERINCOME");
+        transEx = getThisMonthSummary("TRANSFEREXPENSE");
         ((TextView) findViewById(R.id.tv_SumIncome)).setText(nf.format(in));
         ((TextView) findViewById(R.id.tv_SumExpense)).setText(nf.format(ex));
-        ((TextView) findViewById(R.id.tv_SumBalance)).setText(nf.format(in-ex));
+
+        ((TextView) findViewById(R.id.tv_SumTransferExpense)).setText(nf.format(transEx));
+        ((TextView) findViewById(R.id.tv_SumTransferIncome)).setText(nf.format(transIn));
+
+        ((TextView) findViewById(R.id.tv_SumBalance)).setText(nf.format(in+transIn-ex-transEx));
     }
 
     public void dumpQuery(String sqlitequery)

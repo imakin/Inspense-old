@@ -39,7 +39,7 @@ public class EditexpenseActivity extends ActionBarActivity {
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH)+1;
         String thismonth = ""+mYear+"-"+String.format("%02d",mMonth)+"-01";
-        Cursor dbv_dates = db.rawQuery("SELECT date FROM incomesexpenses WHERE type='EXPENSE' AND date BETWEEN DATE('"+thismonth+"') AND DATE('"+thismonth+"','+1 month', '-1 day') GROUP BY date; ",null);
+        Cursor dbv_dates = db.rawQuery("SELECT date FROM incomesexpenses WHERE type LIKE '%EXPENSE%' AND date BETWEEN DATE('"+thismonth+"') AND DATE('"+thismonth+"','+1 month', '-1 day') GROUP BY date; ",null);
         while (dbv_dates.moveToNext())
         {
             String thisdate = dbv_dates.getString(0);
@@ -54,7 +54,7 @@ public class EditexpenseActivity extends ActionBarActivity {
             final Cursor dbv_thisdate = db.rawQuery(
                     "SELECT incomesexpenses.*, accounts.name FROM incomesexpenses " +
                         "LEFT JOIN accounts ON incomesexpenses.from_account_id=accounts.id " +
-                        "WHERE incomesexpenses.type='EXPENSE' " +
+                        "WHERE incomesexpenses.type LIKE '%EXPENSE%' " +
                             "AND incomesexpenses.date='"+thisdate+"' ORDER BY date;"
                     , null);
             int btcid = 500;
@@ -137,6 +137,7 @@ public class EditexpenseActivity extends ActionBarActivity {
             String amount = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("amount"));
             String description = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("description"));
             String date = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("date"));
+            String type = dbv_tobeEdit.getString(dbv_tobeEdit.getColumnIndex("type"));
 
             Intent mi = new Intent(EditexpenseActivity.this, AddexpenseActivity.class);
             mi.putExtra("isEditing",1);
@@ -148,6 +149,7 @@ public class EditexpenseActivity extends ActionBarActivity {
             mi.putExtra("v_description", description);
             mi.putExtra("v_date", date);
             mi.putExtra("v_idEdit", id);
+            mi.putExtra("v_type", type);
 
             EditexpenseActivity.this.startActivityForResult(mi, 999);
         }
